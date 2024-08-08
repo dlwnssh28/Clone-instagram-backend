@@ -25,11 +25,9 @@ public class UserService {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
-    
-    public UserDTO getUserById(String id) {
-        Optional<UserEntity> userOpt = userRepository.findById(id);
-        if (userOpt.isPresent()) {
-            UserEntity user = userOpt.get();
+    public UserDTO getUserByUserId(String userId) {
+        UserEntity user = userRepository.findByUserId(userId);
+        if (user != null) {
             return UserMapper.toDto(user);
         } else {
             throw new RuntimeException("User not found");

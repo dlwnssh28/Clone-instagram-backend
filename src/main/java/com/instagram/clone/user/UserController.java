@@ -2,6 +2,7 @@ package com.instagram.clone.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,9 +12,10 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/{id}")
-    public UserDTO getUserById(@PathVariable String id) {
-        return userService.getUserById(id);
+
+    @GetMapping("/profile")
+    public UserDTO getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return userService.getUserByUserId(customUserDetails.getUsername());
     }
 
     @GetMapping("/check-email")
