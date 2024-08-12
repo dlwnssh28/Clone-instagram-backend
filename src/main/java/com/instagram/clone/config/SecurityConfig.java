@@ -12,13 +12,16 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import com.instagram.clone.auth.CustomLogoutFilter;
+import com.instagram.clone.auth.CustomUserDetailsService;
+import com.instagram.clone.auth.LoginFilter;
+import com.instagram.clone.auth.RefreshRepository;
 import com.instagram.clone.jwt.JWTFilter;
 import com.instagram.clone.jwt.JWTUtil;
-import com.instagram.clone.jwt.LoginFilter;
-import com.instagram.clone.user.CustomUserDetailsService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -31,12 +34,15 @@ public class SecurityConfig {
 	private final JWTUtil jwtUtil;
 	
     private final CustomUserDetailsService userDetailsService;
+    
+    private final RefreshRepository refreshRepository;
 
-	public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService) {
+	public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService, RefreshRepository refreshRepository) {
 	
 	    this.authenticationConfiguration = authenticationConfiguration;
 	    this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.refreshRepository = refreshRepository;
 	}
 
 	//AuthenticationManager Bean 등록
@@ -69,8 +75,7 @@ public class SecurityConfig {
 		                configuration.setAllowCredentials(true);
 		                configuration.setAllowedHeaders(Collections.singletonList("*"));
 		                configuration.setMaxAge(3600L);
-		
-											configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+						configuration.setExposedHeaders(Collections.singletonList("access"));
 		
 		                return configuration;
 		            }
@@ -87,14 +92,17 @@ public class SecurityConfig {
 		//경로별 인가 설정
 		http
 				.authorizeHttpRequests((auth) -> auth
-						.requestMatchers("/login", "/", "/signup").permitAll()
-		                .requestMatchers("/api/**").permitAll()
+						.requestMatchers("/login", "/", "/signup", "/logout").permitAll()
+		                .requestMatchers("/api/users/**").permitAll()
+		                .requestMatchers("/reissue").permitAll()
 						.requestMatchers("/admin").hasRole("ADMIN")
 						.anyRequest().authenticated());
 		http
         		.addFilterAfter(new JWTFilter(jwtUtil), LoginFilter.class);
 		http
-				.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
+				.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+		http
+				.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
 		//세션 설정 
 		http
         .sessionManagement((session) -> session

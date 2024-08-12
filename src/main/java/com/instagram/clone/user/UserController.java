@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.instagram.clone.auth.CustomUserDetails;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
