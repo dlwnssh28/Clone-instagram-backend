@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,5 +50,7 @@ public class UserEntity {
 
     @Column(name = "role", length = 30)
     private String role;
-    
+
+    @Column(name = "created_at", nullable = true)
+    private LocalDateTime createdAt;
 }
