@@ -2,6 +2,9 @@ package com.instagram.clone.user;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 
 @Data
@@ -20,4 +23,5 @@ public class UserDTO {
     private String profileImg;
     private String socialId;
     private boolean privateFlag;
+    private LocalDateTime CreateAt;
 }
