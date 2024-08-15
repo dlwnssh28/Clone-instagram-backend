@@ -79,21 +79,6 @@ public class FollowController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/block/{toUserId}")
-    public ResponseEntity<Void> blockUser(@PathVariable String toUserId, 
-                                          @AuthenticationPrincipal UserDetails currentUser) {
-        String fromUserId = currentUser.getUsername();
-        followService.blockUser(fromUserId, toUserId);
-        return ResponseEntity.noContent().build();
-    }
-    
-    @PostMapping("/unblock/{toUserId}")
-    public ResponseEntity<Void> unblockUser(@PathVariable String toUserId, @AuthenticationPrincipal UserDetails currentUser) {
-        String fromUserId = currentUser.getUsername();
-        followService.unblockUser(fromUserId, toUserId);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/status/{toUserId}")
     public ResponseEntity<FollowStatusDTO> getFollowStatus(@PathVariable String toUserId, 
                                                            @AuthenticationPrincipal UserDetails currentUser) {

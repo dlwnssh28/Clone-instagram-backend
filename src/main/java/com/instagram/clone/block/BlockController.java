@@ -16,11 +16,11 @@ public class BlockController {
     }
 
     @PostMapping("/{toUserId}")
-    public ResponseEntity<Void> blockUser(@PathVariable String toUserId, 
-                                          @AuthenticationPrincipal UserDetails currentUser) {
+    public ResponseEntity<BlockDTO> blockUser(@PathVariable String toUserId, 
+                                              @AuthenticationPrincipal UserDetails currentUser) {
         String fromUserId = currentUser.getUsername();
-        blockService.blockUser(fromUserId, toUserId);
-        return ResponseEntity.noContent().build();
+        BlockDTO blockDTO = blockService.blockUser(fromUserId, toUserId);
+        return ResponseEntity.ok(blockDTO);
     }
 
     @DeleteMapping("/{toUserId}")

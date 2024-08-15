@@ -1,36 +1,27 @@
 package com.instagram.clone.follow;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.instagram.clone.block.BlockEntity;
-import com.instagram.clone.block.BlockRepository;
 import com.instagram.clone.block.BlockService;
 import com.instagram.clone.user.UserEntity;
 import com.instagram.clone.user.UserRepository;
-import com.instagram.clone.user.UserService;
 
 @Service
 public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
-    private final BlockRepository blockRepository;
-    
-    private final UserService userService;
     private final BlockService blockService;
 
-    public FollowService(FollowRepository followRepository, UserRepository userRepository, BlockRepository blockRepository, BlockService blockService, UserService userService) {
+    public FollowService(FollowRepository followRepository, UserRepository userRepository,  BlockService blockService) {
         this.followRepository = followRepository;
         this.userRepository = userRepository;
-        this.blockRepository = blockRepository;
         this.blockService = blockService;
-        this.userService = userService;
     }
 
     @Transactional
@@ -160,46 +151,6 @@ public class FollowService {
             .orElseThrow(() -> new RuntimeException("Follow relationship not found"));
 
         followRepository.delete(followEntity);
-    }
-    
-    // 차단 기능
-    @Transactional
-    public void blockUser(String fromUserId, String toUserId) {
-        UserEntity fromUser = userService.findUserByUserId(fromUserId);
-        UserEntity toUser = userService.findUserByUserId(toUserId);
-        
-        // 이미 차단한 사용자인지 확인
-        if (blockRepository.existsByFromUserIdAndToUserId(fromUser.getId(), toUser.getId())) {
-            throw new RuntimeException("User already blocked");
-        }
-
-        // 기존 팔로우 관계 제거 (fromUser가 toUser를 팔로우하는 경우)
-        Optional<FollowEntity> followFromTo = followRepository.findByFromUserIdAndToUserId(fromUser.getId(), toUser.getId());
-        followFromTo.ifPresent(followRepository::delete);
-
-        // 기존 팔로워 관계 제거 (toUser가 fromUser를 팔로우하는 경우)
-        Optional<FollowEntity> followToFrom = followRepository.findByFromUserIdAndToUserId(toUser.getId(), fromUser.getId());
-        followToFrom.ifPresent(followRepository::delete);
-
-        // 차단 엔티티 생성 및 저장
-        BlockEntity blockEntity = new BlockEntity();
-        blockEntity.setFromUser(fromUser);
-        blockEntity.setToUser(toUser);
-
-        blockRepository.save(blockEntity);
-    }
-    
-    @Transactional
-    public void unblockUser(String fromUserId, String toUserId) {
-        UserEntity fromUser = userService.findUserByUserId(fromUserId);
-        UserEntity toUser = userService.findUserByUserId(toUserId);
-
-        // 차단 해제할 관계를 찾습니다.
-        BlockEntity blockEntity = blockRepository.findByFromUserIdAndToUserId(fromUser.getId(), toUser.getId())
-            .orElseThrow(() -> new RuntimeException("Block relationship not found"));
-
-        // 차단 관계를 삭제합니다.
-        blockRepository.delete(blockEntity);
     }
 
     // 팔로우 상태 확인 기능
