@@ -22,6 +22,12 @@ public class UserDTO {
     private String introduce;
     private String profileImg;
     private String socialId;
-    private boolean privateFlag;
-    private LocalDateTime CreateAt;
+    private boolean privateFlag; // false: 공개 계정, true: 비공개 계정
+    private LocalDateTime createdAt;
+
+    // 프로필 이미지와 userId만 설정하는 경우를 위한 생성자
+    public UserDTO(String userId, String profileImg) {
+        this.userId = userId;
+        this.profileImg = profileImg;
+    }
 }

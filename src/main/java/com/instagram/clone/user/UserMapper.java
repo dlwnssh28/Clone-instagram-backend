@@ -33,7 +33,7 @@ public class UserMapper {
         user.setIntroduce(userDTO.getIntroduce());
         user.setProfileImg(userDTO.getProfileImg());
         user.setSocialId(userDTO.getSocialId());
-        user.setCreatedAt(userDTO.getCreateAt());
+        user.setCreatedAt(userDTO.getCreatedAt());
         user.setPrivateFlag(userDTO.isPrivateFlag());
         return user;
     }
