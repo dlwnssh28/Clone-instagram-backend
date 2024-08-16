@@ -144,18 +144,29 @@ public class FollowService {
         followRepository.delete(followEntity);
     }
     
-    // 팔로우 취소 기능
     @Transactional
     public void unfollowUser(String fromUserId, String toUserId) {
-        FollowEntity followEntity = followRepository.findByFromUserIdAndToUserId(fromUserId, toUserId)
-            .orElseThrow(() -> new RuntimeException("Follow relationship not found"));
+        UserEntity fromUser = userRepository.findByUserId(fromUserId);
+        if (fromUser == null) {
+            throw new RuntimeException("User not found with userId: " + fromUserId);
+        }
+
+        UserEntity toUser = userRepository.findByUserId(toUserId);
+        if (toUser == null) {
+            throw new RuntimeException("User not found with userId: " + toUserId);
+        }
+
+        // 각 id를 사용해 FollowEntity를 조회
+        FollowEntity followEntity = followRepository.findByFromUserIdAndToUserId(fromUser.getId(), toUser.getId())
+                .orElseThrow(() -> new RuntimeException("Follow relationship not found"));
 
         followRepository.delete(followEntity);
     }
 
+
     // 팔로우 상태 확인 기능
     @Transactional(readOnly = true)
-    public FollowStatusDTO getFollowStatus(String fromUserId, String toUserId) {
+    public FollowStatusDTO getFollowStatus(String fromUserId, String toUserId) {;
         boolean isFollowing = followRepository.existsByFromUserIdAndToUserId(fromUserId, toUserId);
         boolean hasRequested = followRepository.existsByFromUserIdAndToUserIdAndRequestFalse(fromUserId, toUserId);
 
