@@ -1,5 +1,6 @@
 package com.instagram.clone.auth;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -57,6 +58,7 @@ public class SignupService {
         data.setPhone(phone);
         data.setName(name);
         data.setRole("ROLE_USER");
+        data.setCreatedAt(LocalDateTime.now());
         data.setPassword(bCryptPasswordEncoder.encode(password));
         
         System.out.println("UserEntity to be saved: " + data.getName());

@@ -16,7 +16,8 @@ public class UserMapper {
             user.getIntroduce(),
             user.getProfileImg(),
             user.getSocialId(),
-            user.isPrivateFlag()
+            user.isPrivateFlag(),
+            user.getCreatedAt()
         );
     }
 
@@ -32,6 +33,7 @@ public class UserMapper {
         user.setIntroduce(userDTO.getIntroduce());
         user.setProfileImg(userDTO.getProfileImg());
         user.setSocialId(userDTO.getSocialId());
+        user.setCreatedAt(userDTO.getCreatedAt());
         user.setPrivateFlag(userDTO.isPrivateFlag());
         return user;
     }
