@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -56,7 +57,7 @@ public class PostService {
         return new PostResponseDTO(postEntity);
     }
 
-    private final String uploadDir = System.getProperty("user.dir") + "/uploads";
+    private final String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads";
 
     private String saveImage(MultipartFile image) {
         try {
@@ -97,5 +98,15 @@ public class PostService {
         PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
         return new PostResponseDTO(postEntity);
+    }
+
+    public List<PostResponseDTO> getPostsByUserId(String id) {
+        List<PostEntity> posts = postRepository.findByUserId(id);
+        return posts.stream()
+                .map(post -> {
+                        List<PostImageEntity> images = post.getPostImages();
+                        return new PostResponseDTO(post,images);
+                })
+                .collect(Collectors.toList());
     }
 }

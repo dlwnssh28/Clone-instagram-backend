@@ -35,4 +35,10 @@ public class UserController {
         return ResponseEntity.ok(userService.checkUserIdExists(userId));
     }
 
+    // 특정 userId에 해당하는 사용자 정보 반환
+    @GetMapping("/profile/{userId}")
+    public UserDTO getUserInfoById(@PathVariable String userId) {
+        return userService.getUserByUserId(userId); // userId를 기반으로 사용자 정보 가져오기
+    }
+
 }
