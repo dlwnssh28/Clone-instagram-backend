@@ -53,5 +53,17 @@ public class UserService {
         return userRepository.existsByUserId(userId);
     }
 
+    public UserEntity findUserByUserId(String userId) {
+        UserEntity user = userRepository.findByUserId(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        return user;
+    }
+    
+    public String getUserUuidByUserId(String userId) {
+        return findUserByUserId(userId).getId(); // UUID 반환
+    }
+
 }
 
