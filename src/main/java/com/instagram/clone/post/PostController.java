@@ -40,10 +40,9 @@ public class PostController {
         return ResponseEntity.ok(postResponseDTO);
     }
 
-
-    @GetMapping("/{id}")
-    public ResponseEntity<PostResponseDTO> getPostById(@PathVariable Integer id) {
-        PostResponseDTO postResponseDTO = postService.getPostById(id);
-        return ResponseEntity.ok(postResponseDTO);
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<PostResponseDTO>> getPostsByUserId(@PathVariable("id") String id) {
+        List<PostResponseDTO> postResponseDTOs = postService.getPostsByUserId(id);
+        return ResponseEntity.ok(postResponseDTOs);
     }
 }

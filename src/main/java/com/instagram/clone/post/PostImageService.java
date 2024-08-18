@@ -43,9 +43,7 @@ public class PostImageService {
 //    }
 
     private PostImageDTO convertToDTO(PostImageEntity entity) {
-        PostImageDTO dto = new PostImageDTO();
-        dto.setUrl(entity.getUrl());
-        dto.setAlt(entity.getAlt());
-        return dto;
+        return new PostImageDTO(entity); // 매개변수를 사용하는 생성자 호출
     }
+
 }
