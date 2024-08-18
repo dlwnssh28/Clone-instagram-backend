@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -56,7 +57,7 @@ public class PostService {
         return new PostResponseDTO(postEntity);
     }
 
-    private final String uploadDir = System.getProperty("user.dir") + "/uploads";
+    private final String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads";
 
     private String saveImage(MultipartFile image) {
         try {
@@ -98,4 +99,20 @@ public class PostService {
                 .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
         return new PostResponseDTO(postEntity);
     }
+
+    public List<PostResponseDTO> getPostsByUserId(String userId) {
+        List<PostEntity> posts = postRepository.findByUserId(userId);
+        return posts.stream()
+                .map(post -> {
+                    List<PostImageEntity> postImages = post.getPostImages(); // postId에 해당하는 모든 이미지 가져오기
+                    int totalImageCount = postImages.size(); // 전체 이미지 개수 계산
+
+                    // 썸네일 용도로 첫 번째 이미지만 선택 (0번째 이미지)
+                    List<PostImageEntity> thumbnailImage = List.of(postImages.get(0));
+
+                    return new PostResponseDTO(post, thumbnailImage, totalImageCount);
+                })
+                .collect(Collectors.toList());
+    }
+
 }
