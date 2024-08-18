@@ -1,26 +1,34 @@
 package com.instagram.clone.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.instagram.clone.follow.FollowRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FollowRepository followRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, FollowRepository followRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder; 
+        this.followRepository = followRepository;
+        this.passwordEncoder = passwordEncoder;
     }
-
+    
     public boolean checkPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
@@ -65,5 +73,18 @@ public class UserService {
         return findUserByUserId(userId).getId(); // UUID 반환
     }
 
+    public List<UserDTO> getUserSuggestions(String currentUserId, int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        UserEntity fromUser = userRepository.findByUserId(currentUserId);
+
+        List<UserEntity> users = userRepository.findTopNUsers(pageable);
+
+        return users.stream()
+                .filter(user -> !user.getId().equals(fromUser.getId())) // 로그인 중인 자신을 제외
+                .filter(user -> !followRepository.existsByFromUserIdAndToUserId(fromUser.getId(), user.getId())) // 이미 팔로우 중인 사용자 제외
+                .map(UserMapper::toDto) // 필터링된 사용자만 DTO로 변환
+                .collect(Collectors.toList());
+    }
+    
 }
 

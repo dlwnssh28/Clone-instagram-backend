@@ -2,8 +2,11 @@ package com.instagram.clone.follow;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +27,10 @@ public class FollowController {
     @PostMapping("/{toUserId}")
     public ResponseEntity<FollowDTO> followUser(@PathVariable String toUserId, 
                                                 @AuthenticationPrincipal UserDetails currentUser) {
+    	
+//    	if (currentUser == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // 또는 적절한 에러 메시지 반환
+//        }
         // 현재 인증된 사용자의 ID를 가져옴
         String fromUserId = currentUser.getUsername();
 
@@ -80,9 +87,17 @@ public class FollowController {
     }
 
     @GetMapping("/status/{toUserId}")
-    public ResponseEntity<FollowStatusDTO> getFollowStatus(@PathVariable String toUserId, 
-                                                           @AuthenticationPrincipal UserDetails currentUser) {
-        String fromUserId = currentUser.getUsername();
+    public ResponseEntity<FollowStatusDTO> getFollowStatus(@PathVariable String toUserId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String fromUserId = null;
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetails) {
+                fromUserId = ((UserDetails) principal).getUsername();
+            }
+        }
+
         FollowStatusDTO followStatus = followService.getFollowStatus(fromUserId, toUserId);
         return ResponseEntity.ok(followStatus);
     }
