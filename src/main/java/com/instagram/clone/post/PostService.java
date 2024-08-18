@@ -100,13 +100,19 @@ public class PostService {
         return new PostResponseDTO(postEntity);
     }
 
-    public List<PostResponseDTO> getPostsByUserId(String id) {
-        List<PostEntity> posts = postRepository.findByUserId(id);
+    public List<PostResponseDTO> getPostsByUserId(String userId) {
+        List<PostEntity> posts = postRepository.findByUserId(userId);
         return posts.stream()
                 .map(post -> {
-                        List<PostImageEntity> images = post.getPostImages();
-                        return new PostResponseDTO(post,images);
+                    List<PostImageEntity> postImages = post.getPostImages(); // postId에 해당하는 모든 이미지 가져오기
+                    int totalImageCount = postImages.size(); // 전체 이미지 개수 계산
+
+                    // 썸네일 용도로 첫 번째 이미지만 선택 (0번째 이미지)
+                    List<PostImageEntity> thumbnailImage = List.of(postImages.get(0));
+
+                    return new PostResponseDTO(post, thumbnailImage, totalImageCount);
                 })
                 .collect(Collectors.toList());
     }
+
 }
