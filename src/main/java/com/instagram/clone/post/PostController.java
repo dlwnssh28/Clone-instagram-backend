@@ -43,6 +43,7 @@ public class PostController {
     @GetMapping("/user/{id}")
     public ResponseEntity<List<PostResponseDTO>> getPostsByUserId(@PathVariable("id") String id) {
         List<PostResponseDTO> postResponseDTOs = postService.getPostsByUserId(id);
+        System.out.println("조회할 postId: "+postResponseDTOs);
         return ResponseEntity.ok(postResponseDTOs);
     }
 }

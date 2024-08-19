@@ -29,7 +29,7 @@ public class PostService {
 
     @Transactional
     public PostResponseDTO createPost(PostRequestDTO postRequestDTO, List<MultipartFile> images, List<String> alts) {
-        // Create and save the post entity
+        // 게시물 엔티티 생성 및 저장
         PostEntity postEntity = new PostEntity();
         postEntity.setUserId(postRequestDTO.getUserId());
         postEntity.setContent(postRequestDTO.getContent());
@@ -37,47 +37,50 @@ public class PostService {
         postEntity.setCommentFlag(postRequestDTO.isCommentFlag());
         postEntity.setShowFlag(postRequestDTO.isShowFlag());
         postRepository.save(postEntity);
-        System.out.println("Saved PostEntity ID: " + postEntity.getPostId());
 
-        // Save each image with the associated post entity
+        // 각 이미지와 연결된 PostImageEntity 생성 및 저장
         for (int i = 0; i < images.size(); i++) {
             MultipartFile image = images.get(i);
             String alt = alts.get(i);
 
             PostImageEntity postImageEntity = new PostImageEntity();
-            postImageEntity.setUrl(saveImage(image)); // Save image and get URL
+            postImageEntity.setUrl(saveImage(image)); // 이미지 파일 저장 후 URL 반환
             postImageEntity.setAlt(alt);
-            postImageEntity.setPost(postEntity); // Associate PostEntity with PostImageEntity
+            postImageEntity.setPost(postEntity);
 
-            // Log details of the PostImageEntity before saving
-            System.out.println("Saving PostImageEntity with Post ID: " + postEntity.getPostId() + ", Alt: " + alt);
             postImageRepository.save(postImageEntity);
         }
 
         return new PostResponseDTO(postEntity);
     }
 
-    private final String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads";
+    // 파일 저장 디렉토리 경로 설정
+    private final String uploadDir = System.getProperty("user.dir") + "/uploads";
 
     private String saveImage(MultipartFile image) {
         try {
+
             // 업로드 폴더가 존재하지 않으면 생성
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
+                Files.createDirectories(uploadPath); // 디렉토리 생성
             }
 
-            // 파일 저장
+            // 파일 이름 생성
             String fileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
             Path filePath = uploadPath.resolve(fileName);
-            image.transferTo(filePath);
+
+            // 파일을 지정된 경로에 저장 (임시 파일을 사용하지 않음)
+            Files.write(filePath, image.getBytes()); // 파일을 직접 디스크에 기록
 
             // 파일의 상대 URL 반환 (예: /uploads/파일이름)
-            return "/uploads/" + fileName;
+            String fileUrl = "/uploads/" + fileName;
+            return fileUrl;
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save image", e);
+            throw new RuntimeException("이미지 저장 실패", e);
         }
     }
+
 
     private String generateFileName(String originalFilename) {
         String extension = getFileExtension(originalFilename);
