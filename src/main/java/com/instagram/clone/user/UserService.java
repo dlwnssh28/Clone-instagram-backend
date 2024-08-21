@@ -42,6 +42,12 @@ public class UserService {
         }
     }
 
+    public UserDTO getUserById(String id) {
+        return userRepository.findById(id)
+                .map(UserMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
     public UserDTO createUser(UserDTO userDTO) {
         UserEntity user = UserMapper.toEntity(userDTO);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));

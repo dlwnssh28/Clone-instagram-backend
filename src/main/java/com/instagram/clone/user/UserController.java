@@ -46,9 +46,15 @@ public class UserController {
     }
 
     // 특정 userId에 해당하는 사용자 정보 반환
-    @GetMapping("/profile/{userId}")
-    public UserDTO getUserInfoById(@PathVariable String userId) {
+    @GetMapping("/profile/userId/{userId}")
+    public UserDTO getUserInfoByUserId(@PathVariable String userId) {
         return userService.getUserByUserId(userId); // userId를 기반으로 사용자 정보 가져오기
+    }
+
+    // 특정 id 해당하는 사용자 정보 반환
+    @GetMapping("/profile/id/{id}")
+    public UserDTO getUserInfoById(@PathVariable String id) {
+        return userService.getUserById(id); // id를 기반으로 사용자 정보 가져오기
     }
 
 }

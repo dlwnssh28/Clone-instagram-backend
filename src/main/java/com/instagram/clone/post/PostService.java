@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -97,12 +98,6 @@ public class PostService {
         }
     }
 
-    public PostResponseDTO getPostById(Integer postId) {
-        PostEntity postEntity = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
-        return new PostResponseDTO(postEntity);
-    }
-
     public List<PostResponseDTO> getPostsByUserId(String userId) {
         List<PostEntity> posts = postRepository.findByUserId(userId);
         return posts.stream()
@@ -116,6 +111,15 @@ public class PostService {
                     return new PostResponseDTO(post, thumbnailImage, totalImageCount);
                 })
                 .collect(Collectors.toList());
+    }
+
+    public PostResponseDTO getPostById(Integer postId) {
+        Optional<PostEntity> postEntityOptional = postRepository.findById(postId);
+        if (postEntityOptional.isPresent()) {
+            return new PostResponseDTO(postEntityOptional.get());
+        } else {
+            return null;
+        }
     }
 
 }

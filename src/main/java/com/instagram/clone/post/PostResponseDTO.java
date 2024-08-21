@@ -24,6 +24,12 @@ public class PostResponseDTO {
         this.createdAt = post.getCreatedAt();
         this.commentFlag = post.isCommentFlag();
         this.showFlag = post.isShowFlag();
+        this.images = post.getPostImages().stream()
+                .map(PostImageDTO::new)  // PostImageEntity -> PostImageDTO로 변환
+                .collect(Collectors.toList());
+
+        // 전체 이미지 개수를 기준으로 hasMultipleImages 설정
+        this.hasMultipleImages = this.images.size() > 1;
     }
 
     public PostResponseDTO(PostEntity post, List<PostImageEntity> images, int totalImageCount) {

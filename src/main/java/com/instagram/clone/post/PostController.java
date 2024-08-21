@@ -34,16 +34,23 @@ public class PostController {
             throw new RuntimeException("유효하지 않은 데이터 타입", e);
         }
 
-        System.out.println("게시물 등록 시도");
         PostResponseDTO postResponseDTO = postService.createPost(postRequestDTO, images, alts);
-        System.out.println("등록할 게시물 정보: " + postResponseDTO);
         return ResponseEntity.ok(postResponseDTO);
     }
 
     @GetMapping("/user/{id}")
     public ResponseEntity<List<PostResponseDTO>> getPostsByUserId(@PathVariable("id") String id) {
         List<PostResponseDTO> postResponseDTOs = postService.getPostsByUserId(id);
-        System.out.println("조회할 postId: "+postResponseDTOs);
         return ResponseEntity.ok(postResponseDTOs);
+    }
+
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostResponseDTO> getPostById(@PathVariable("postId") Integer postId) {
+        PostResponseDTO postResponseDTO = postService.getPostById(postId);
+        if (postResponseDTO == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(postResponseDTO);
     }
 }

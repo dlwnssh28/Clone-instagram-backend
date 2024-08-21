@@ -1,6 +1,7 @@
 package com.instagram.clone.user;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     UserEntity findByUserId(String userid);
     UserEntity findByEmail(String email);
     UserEntity findByPhone(String phone);
+    Optional<UserEntity> findById(String id);
     
     @Query("SELECT u FROM UserEntity u ORDER BY u.createdAt DESC")
     List<UserEntity> findTopNUsers(Pageable pageable);
