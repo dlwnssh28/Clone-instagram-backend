@@ -29,4 +29,19 @@ public class PostLikeService {
     public boolean checkIfUserLikedPost(String userId, Integer postId) {
         return postLikeRepository.existsByUserIdAndPostId(userId, postId);
     }
+
+    public boolean cancleLikePost(String userId, Integer postId) {
+        try {
+            // 1. userId와 postId로 PostLikeEntity를 찾기
+            PostLikeEntity postLike = postLikeRepository.findByUserIdAndPostId(userId, postId);
+            if (postLike != null) {
+                // 2. 찾은 엔티티를 삭제
+                postLikeRepository.delete(postLike);
+                return true;
+            }
+            return false; // 좋아요가 존재하지 않는 경우
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

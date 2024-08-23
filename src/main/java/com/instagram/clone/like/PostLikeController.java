@@ -26,4 +26,14 @@ public class PostLikeController {
         boolean isLiked = postLikeService.checkIfUserLikedPost(userId, postId);
         return ResponseEntity.ok(isLiked);
     }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<String> cancleLikePost(@RequestBody PostLikeDTO dto) {
+        boolean isCancled = postLikeService.cancleLikePost(dto.getUserId(), dto.getPostId());
+        if (isCancled) {
+            return ResponseEntity.ok("Post unliked successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Failed to unlike post");
+        }
+    }
 }
