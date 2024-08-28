@@ -53,4 +53,16 @@ public class PostController {
         }
         return ResponseEntity.ok(postResponseDTO);
     }
+
+    // 저장된 게시물 가져오기
+    @GetMapping("/saved/{id}")
+    public ResponseEntity<List<PostResponseDTO>> getSavedPosts(@PathVariable String id) {
+        System.out.println("조회 id: " + id);
+        List<PostResponseDTO> savedPosts = postService.getSavedPosts(id);
+        System.out.println("조회 목록: " + savedPosts);
+        if (savedPosts.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(savedPosts);
+    }
 }

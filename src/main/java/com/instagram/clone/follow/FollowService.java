@@ -45,8 +45,7 @@ public class FollowService {
         if (blockService.isBlocked(toUserId, fromUserId)) {
             throw new RuntimeException("You are blocked by this user");
         }
-        
-        
+
 
         boolean request = !toUser.isPrivateFlag(); // 비공개 계정일 경우 요청 상태로 설정
 

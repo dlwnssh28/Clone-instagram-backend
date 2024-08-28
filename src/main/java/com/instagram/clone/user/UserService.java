@@ -91,6 +91,10 @@ public class UserService {
                 .map(UserMapper::toDto) // 필터링된 사용자만 DTO로 변환
                 .collect(Collectors.toList());
     }
-    
+
+    public List<UserDTO> searchUsers(String query, Pageable pageable) {
+        List<UserEntity> users = userRepository.searchByUserIdOrName(query, pageable);
+        return users.stream().map(UserMapper::toDto).toList();
+    }
 }
 

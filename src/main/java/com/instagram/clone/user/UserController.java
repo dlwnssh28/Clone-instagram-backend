@@ -57,4 +57,10 @@ public class UserController {
         return userService.getUserById(id); // id를 기반으로 사용자 정보 가져오기
     }
 
+    // 사용자 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<UserDTO>> searchUsers(@RequestParam String query, Pageable pageable) {
+        List<UserDTO> users = userService.searchUsers(query, pageable);
+        return ResponseEntity.ok(users);
+    }
 }

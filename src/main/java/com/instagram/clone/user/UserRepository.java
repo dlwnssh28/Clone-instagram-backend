@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface UserRepository extends JpaRepository<UserEntity, String> {
 	
@@ -20,5 +21,8 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     
     @Query("SELECT u FROM UserEntity u ORDER BY u.createdAt DESC")
     List<UserEntity> findTopNUsers(Pageable pageable);
+
+    @Query("SELECT u FROM UserEntity u WHERE u.userId LIKE %:query% OR u.name LIKE %:query%")
+    List<UserEntity> searchByUserIdOrName(@Param("query") String query, Pageable pageable);
 
 }

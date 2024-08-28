@@ -1,5 +1,8 @@
 package com.instagram.clone.post;
 
+import com.instagram.clone.bookmark.BookmarkEntity;
+import com.instagram.clone.bookmark.BookmarkRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,6 +123,21 @@ public class PostService {
         } else {
             return null;
         }
+    }
+
+    @Autowired
+    private BookmarkRepository bookmarkRepository;
+
+    public List<PostResponseDTO> getSavedPosts(String id) {
+        List<BookmarkEntity> bookmarks = bookmarkRepository.findByUserId(id);
+        List<Integer> postIds = bookmarks.stream().map(BookmarkEntity::getPostId).collect(Collectors.toList());
+
+        List<PostEntity> posts = postRepository.findByPostIdIn(postIds);
+
+        return posts.stream().map(post -> {
+            List<PostImageEntity> postImages = post.getPostImages();
+            return new PostResponseDTO(post, postImages, postImages.size());
+        }).collect(Collectors.toList());
     }
 
 }
